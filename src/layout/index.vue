@@ -12,24 +12,24 @@
         :collapse-transition="false"
         router
       >
-        <template v-for="menu in userStore.menus" :key="menu.path">
-          <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path">
+        <template v-for="menu in userStore.menus" :key="menu.id">
+          <el-sub-menu v-if="menu.childList && menu.childList.length > 0" :index="menu.path">
             <template #title>
-              <el-icon><component :is="menu.meta?.icon || 'Menu'" /></el-icon>
-              <span>{{ menu.meta?.title || menu.name }}</span>
+              <el-icon><component :is="menu.icon || 'Menu'" /></el-icon>
+              <span>{{ menu.name }}</span>
             </template>
             <el-menu-item
-              v-for="child in menu.children"
-              :key="child.path"
+              v-for="child in menu.childList"
+              :key="child.id"
               :index="child.path"
             >
-              <el-icon><component :is="child.meta?.icon || 'Document'" /></el-icon>
-              <span>{{ child.meta?.title || child.name }}</span>
+              <el-icon><component :is="child.icon || 'Document'" /></el-icon>
+              <span>{{ child.name }}</span>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else :index="menu.path">
-            <el-icon><component :is="menu.meta?.icon || 'Menu'" /></el-icon>
-            <span>{{ menu.meta?.title || menu.name }}</span>
+            <el-icon><component :is="menu.icon || 'Menu'" /></el-icon>
+            <span>{{ menu.name }}</span>
           </el-menu-item>
         </template>
       </el-menu>
@@ -51,24 +51,24 @@
         router
         @select="handleMenuSelect"
       >
-        <template v-for="menu in userStore.menus" :key="menu.path">
-          <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path">
+        <template v-for="menu in userStore.menus" :key="menu.id">
+          <el-sub-menu v-if="menu.childList && menu.childList.length > 0" :index="menu.path">
             <template #title>
-              <el-icon><component :is="menu.meta?.icon || 'Menu'" /></el-icon>
-              <span>{{ menu.meta?.title || menu.name }}</span>
+              <el-icon><component :is="menu.icon || 'Menu'" /></el-icon>
+              <span>{{ menu.name }}</span>
             </template>
             <el-menu-item
-              v-for="child in menu.children"
-              :key="child.path"
+              v-for="child in menu.childList"
+              :key="child.id"
               :index="child.path"
             >
-              <el-icon><component :is="child.meta?.icon || 'Document'" /></el-icon>
-              <span>{{ child.meta?.title || child.name }}</span>
+              <el-icon><component :is="child.icon || 'Document'" /></el-icon>
+              <span>{{ child.name }}</span>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else :index="menu.path">
-            <el-icon><component :is="menu.meta?.icon || 'Menu'" /></el-icon>
-            <span>{{ menu.meta?.title || menu.name }}</span>
+            <el-icon><component :is="menu.icon || 'Menu'" /></el-icon>
+            <span>{{ menu.name }}</span>
           </el-menu-item>
         </template>
       </el-menu>
@@ -173,13 +173,23 @@ onUnmounted(() => {
 
 <style scoped>
 .layout-container {
+  width: 100%;
   height: 100vh;
+  overflow: hidden;
+}
+
+/* 重置 Element Plus 容器的默认样式 */
+.layout-container :deep(.el-container) {
+  width: 100%;
+  height: 100%;
 }
 
 .layout-aside {
   background: #304156;
   transition: width 0.3s;
   overflow-x: hidden;
+  overflow-y: auto;
+  height: 100vh;
 }
 
 .logo {
@@ -191,11 +201,13 @@ onUnmounted(() => {
   font-size: 20px;
   font-weight: bold;
   background: #263445;
+  flex-shrink: 0;
 }
 
 .el-menu {
   border-right: none;
   background: #304156;
+  width: 100%;
 }
 
 :deep(.el-menu-item),
@@ -221,6 +233,9 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  height: 60px;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .header-left {
@@ -260,6 +275,10 @@ onUnmounted(() => {
 .layout-main {
   background: #f0f2f5;
   padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 60px);
+  width: 100%;
 }
 
 /* 移动端抽屉样式 */

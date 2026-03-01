@@ -19,7 +19,7 @@ router.beforeEach(async (to, from, next) => {
   // 已登录且访问登录页，重定向到首页
   if (token && to.path === '/login') {
     hideFullLoading()
-    return next({ path: from.path || '/' })
+    return next({ path: '/' })
   }
 
   // 已登录，获取用户信息和菜单
@@ -30,7 +30,10 @@ router.beforeEach(async (to, from, next) => {
       const data = await userStore.getInfo()
       hasGetInfo = true
       // 动态添加路由
-      hasNewRoutes = addRoutes(data.menus || [])
+      if (data.menus && data.menus.length > 0) {
+        // 根据后端返回的菜单树动态添加路由
+        hasNewRoutes = addRoutes(data.menus)
+      }
     } catch (error) {
       console.error('获取用户信息失败:', error)
       hideFullLoading()

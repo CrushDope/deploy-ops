@@ -29,10 +29,10 @@
                 show-password
               />
             </el-form-item>
-            <el-form-item prop="code">
+            <el-form-item prop="captchaCode">
               <div class="captcha-box">
                 <el-input
-                  v-model="loginForm.code"
+                  v-model="loginForm.captchaCode"
                   placeholder="请输入验证码"
                   prefix-icon="Key"
                   size="large"
@@ -81,8 +81,9 @@ const loading = ref(false)
 const loginForm = reactive({
   username: '',
   password: '',
-  code: '',
-  clientKey: ''
+  captchaCode: '',
+  clientId: '',
+  operation: 'login'
 })
 
 // 验证规则
@@ -93,7 +94,7 @@ const loginRules = {
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' }
   ],
-  code: [
+  captchaCode: [
     { required: true, message: '请输入验证码', trigger: 'blur' }
   ]
 }
@@ -101,20 +102,20 @@ const loginRules = {
 // 验证码 URL
 const captchaUrl = ref('')
 
-// 初始化 clientKey
+// 初始化 clientId
 const initClientKey = () => {
-  let clientKey = getCookie('client-key')
-  if (!clientKey) {
-    clientKey = uuidv4()
-    setCookie('client-key', clientKey)
+  let clientId = getCookie('client-key')
+  if (!clientId) {
+    clientId = uuidv4()
+    setCookie('client-key', clientId)
   }
-  loginForm.clientKey = clientKey
+  loginForm.clientId = clientId
 }
 
 // 刷新验证码
 const refreshCaptcha = () => {
   const timestamp = new Date().getTime()
-  captchaUrl.value = `/api/captcha/getCaptcha/v1?operation=login&clientId=${loginForm.clientKey}&t=${timestamp}`
+  captchaUrl.value = `/api/captcha/getCaptcha/v1?operation=login&clientId=${loginForm.clientId}&t=${timestamp}`
 }
 
 // 登录
@@ -128,8 +129,9 @@ const handleLogin = async () => {
         const res = await login({
           username: loginForm.username,
           password: loginForm.password,
-          code: loginForm.code,
-          clientKey: loginForm.clientKey
+          captchaCode: loginForm.captchaCode,
+          clientId: loginForm.clientId,
+          operation: loginForm.operation
         })
 
         if (res.code === 0) {
@@ -170,8 +172,11 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .login-container {
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -181,6 +186,8 @@ onBeforeUnmount(() => {
 .login-box {
   width: 900px;
   height: 500px;
+  max-width: 100%;
+  max-height: 100%;
   background: white;
   border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -195,6 +202,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   align-items: center;
   color: white;
+  padding: 40px;
 }
 
 .brand h1 {
@@ -214,6 +222,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   align-items: center;
   padding: 40px;
+  background: white;
 }
 
 .login-form {
@@ -240,9 +249,74 @@ onBeforeUnmount(() => {
   cursor: pointer;
   border-radius: 4px;
   border: 1px solid #dcdfe6;
+  flex-shrink: 0;
 }
 
 .captcha-img:hover {
   opacity: 0.8;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 900px) {
+  .login-box {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .login-box {
+    flex-direction: column;
+  }
+
+  .login-left {
+    padding: 30px 20px;
+  }
+
+  .brand h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .brand p {
+    font-size: 14px;
+  }
+
+  .login-right {
+    padding: 30px 20px;
+  }
+
+  .login-form h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .login-left {
+    padding: 20px 15px;
+  }
+
+  .brand h1 {
+    font-size: 28px;
+  }
+
+  .brand p {
+    font-size: 12px;
+  }
+
+  .login-right {
+    padding: 20px 15px;
+  }
+
+  .login-form h2 {
+    font-size: 20px;
+  }
+
+  .captcha-img {
+    width: 100px;
+    height: 36px;
+  }
 }
 </style>

@@ -33,56 +33,40 @@ const routes = [
 // 动态路由（根据权限动态添加）
 export const asyncRoutes = [
   {
-    path: '/system',
-    name: 'System',
-    component: () => import('@/layout/index.vue'),
-    meta: { title: '系统管理', icon: 'Setting' },
-    children: [
-      {
-        path: '/system/user',
-        name: 'SystemUser',
-        component: () => import('@/views/system/user/index.vue'),
-        meta: { title: '用户管理', icon: 'User' }
-      },
-      {
-        path: '/system/role',
-        name: 'SystemRole',
-        component: () => import('@/views/system/role/index.vue'),
-        meta: { title: '角色管理', icon: 'UserFilled' }
-      },
-      {
-        path: '/system/menu',
-        name: 'SystemMenu',
-        component: () => import('@/views/system/menu/index.vue'),
-        meta: { title: '菜单管理', icon: 'Menu' }
-      }
-    ]
+    path: '/system/user',
+    name: '/system/user',
+    component: () => import('@/views/system/user/index.vue'),
+    meta: { title: '用户管理', icon: 'User' }
   },
   {
-    path: '/ops',
-    name: 'Ops',
-    component: () => import('@/layout/index.vue'),
-    meta: { title: '运维管理', icon: 'Monitor' },
-    children: [
-      {
-        path: '/ops/node',
-        name: 'OpsNode',
-        component: () => import('@/views/ops/node/index.vue'),
-        meta: { title: '节点管理', icon: 'Server' }
-      },
-      {
-        path: '/ops/app',
-        name: 'OpsApp',
-        component: () => import('@/views/ops/app/index.vue'),
-        meta: { title: '应用管理', icon: 'Box' }
-      },
-      {
-        path: '/ops/deploy',
-        name: 'OpsDeploy',
-        component: () => import('@/views/ops/deploy/index.vue'),
-        meta: { title: '部署任务', icon: 'Upload' }
-      }
-    ]
+    path: '/system/role',
+    name: '/system/role',
+    component: () => import('@/views/system/role/index.vue'),
+    meta: { title: '角色管理', icon: 'UserFilled' }
+  },
+  {
+    path: '/system/menu',
+    name: '/system/menu',
+    component: () => import('@/views/system/menu/index.vue'),
+    meta: { title: '菜单管理', icon: 'Menu' }
+  },
+  {
+    path: '/ops/node',
+    name: '/ops/node',
+    component: () => import('@/views/ops/node/index.vue'),
+    meta: { title: '节点管理', icon: 'Server' }
+  },
+  {
+    path: '/ops/app',
+    name: '/ops/app',
+    component: () => import('@/views/ops/app/index.vue'),
+    meta: { title: '应用管理', icon: 'Box' }
+  },
+  {
+    path: '/ops/deploy',
+    name: '/ops/deploy',
+    component: () => import('@/views/ops/deploy/index.vue'),
+    meta: { title: '部署任务', icon: 'Upload' }
   }
 ]
 
@@ -94,20 +78,24 @@ const router = createRouter({
 // 动态添加路由
 export function addRoutes(menus) {
   let hasNewRoutes = false
-  const findAndAddRoute = (arr) => {
-    arr.forEach(menu => {
-      const route = asyncRoutes.find(r => r.path === menu.path)
-      if (route && !router.hasRoute(route.path)) {
-        router.addRoute('Layout', route)
-        hasNewRoutes = true
-      }
-      if (menu.children && menu.children.length > 0) {
-        findAndAddRoute(menu.children)
+  const findAndAddRoutesByMenus = (arr) => {
+    arr.forEach(e => {
+      // 如果是目录（parentId = 0），遍历其子菜单
+      if (e.childList && e.childList.length > 0) {
+        findAndAddRoutesByMenus(e.childList)
+      } else {
+        // 如果是具体的菜单页面，查找对应的路由并添加
+        const item = asyncRoutes.find(o => o.path === e.path)
+        if (item && !router.hasRoute(item.path)) {
+          router.addRoute('Layout', item)
+          hasNewRoutes = true
+        }
       }
     })
   }
-  findAndAddRoute(menus)
+  findAndAddRoutesByMenus(menus)
   return hasNewRoutes
 }
 
 export default router
+

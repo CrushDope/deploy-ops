@@ -29,7 +29,7 @@ service.interceptors.response.use(
 
     // 如果返回的状态码不是 0，说明接口请求失败
     if (res.code !== 0) {
-      ElMessage.error(res.msg || '请求失败')
+      ElMessage.error(res.message || '请求失败')
 
       // 401: 未登录或 token 过期
       if (res.code === 401) {
@@ -38,7 +38,7 @@ service.interceptors.response.use(
         window.location.href = '/login'
       }
 
-      return Promise.reject(new Error(res.msg || '请求失败'))
+      return Promise.reject(new Error(res.message || '请求失败'))
     }
 
     return res
@@ -62,10 +62,10 @@ service.interceptors.response.use(
           ElMessage.error('请求的资源不存在')
           break
         case 500:
-          ElMessage.error(data.msg || '服务器错误')
+          ElMessage.error(data.message || '服务器错误')
           break
         default:
-          ElMessage.error(data.msg || '请求失败')
+          ElMessage.error(data.message || '请求失败')
       }
     } else {
       ElMessage.error('网络连接失败')

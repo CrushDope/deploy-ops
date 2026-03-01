@@ -19,9 +19,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080/jdeploy-ops/api',
+        target: 'http://localhost:8080/jdeploy-ops',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path
       }
     }
   }
