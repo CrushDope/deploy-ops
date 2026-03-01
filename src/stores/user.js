@@ -42,7 +42,7 @@ export const useUserStore = defineStore('user', () => {
 
   // 切换侧边栏宽度
   function toggleAsideWidth() {
-    asideWidth.value = asideWidth.value === '250px' ? '64px' : '250px'
+    asideWidth.value = asideWidth.value === '250px' ? '80px' : '250px'
   }
 
   // 检查权限
